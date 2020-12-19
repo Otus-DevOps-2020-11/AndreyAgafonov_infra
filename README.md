@@ -100,8 +100,9 @@ Host 10.16.100.18
 
 Следующее ДЗ
 
-testapp_IP = 178.154.250.232
+testapp_IP = 130.193.46.16
 testapp_port = 9292
 
 Задание со звездочкой:
-в команду созданий машины добавляется строчка `--metadata-from-file user-data=cloud-config`
+В команду созданий машины добавляется строчка `--metadata-from-file user-data=cloud-config`
+Сам файл (cloud-config)[cloud-config]
