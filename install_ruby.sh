@@ -11,7 +11,7 @@ if [[ $? == 0 ]]
           printf '\e[7;31m%-6s\e[m'  "Install Error"
           printf '\n'
       fi
-echo -e "\e[6;34m $(ruby -v)
+echo -e "\e[6;34m $(ruby -v)"
 tput sgr0
 echo -e "\e[6;34m $(bundler -v)"
 tput sgr0

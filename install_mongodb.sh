@@ -3,7 +3,7 @@ echo -e "\e[6;34m Run isntall MongoDb"
 tput sgr0
 echo "Get Repo key"
 wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" > /etc/apt/sources.list.d/mongodb-org-4.2.list
 
 sudo apt-get update -qq
 sudo apt-get install -qq -y mongodb-org
