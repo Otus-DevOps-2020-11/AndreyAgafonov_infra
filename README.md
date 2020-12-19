@@ -31,8 +31,9 @@
 
 
   Outputs:
-bastion_IP = 84.201.181.131
+bastion_IP = 178.154.250.232
 someinternalhost_IP = 10.16.100.18
+
 
 
 Созданы пользователи 'appuser' на каждой машине и добавлены ssh ключи(приложены к репе).
@@ -95,3 +96,12 @@ Host 10.16.100.18
 Команда для проверки: `ssh -i {path_to_ssh_key} appuser@10.16.100.18`
 
 ![image-20201218022941235](readme.assets/image-20201218022941235.png)
+
+
+Следующее ДЗ
+
+testapp_IP = 178.154.250.232
+testapp_port = 9292
+
+Задание со звездочкой:
+в команду созданий машины добавляется строчка `--metadata-from-file user-data=cloud-config`
