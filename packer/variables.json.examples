@@ -1,0 +1,7 @@
+{
+        "token": "{{ env `YC_TOKEN` }}",
+        "folder_id": "{{ env `YC_FOLDER_ID` }}",
+        "source_image_id": "fd8tg1q51rrllvtlnjod",
+        "path_to_service_account": "../key.json",
+        "disk_type": "network-hdd"
+}
