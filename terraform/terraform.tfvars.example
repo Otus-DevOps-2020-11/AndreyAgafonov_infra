@@ -1,0 +1,7 @@
+cloud_id = "1234567"
+folder_id = "1234567"
+zone = "ru-central1-c"
+source_image_id = "fd8pa3bmio9agfd3iu36"
+public_key_path = "~/.ssh/otus/otus_demo_key.pub"
+subnet_id = "1234567"
+#service_account_key_file = "key.json"
