@@ -6,3 +6,5 @@ variables.json
 *.tfstate.backup
 *.tfvars
 .terraform/
+otus-homeworks
+run.sh
