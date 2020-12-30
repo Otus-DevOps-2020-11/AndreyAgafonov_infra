@@ -27,7 +27,7 @@ resource "yandex_compute_instance" "app" {
     nat       = false
   }
   metadata = {
-    ssh-keys = "ubuntu:${file("${var.public_key_path}")}"
+    ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
   #   provisioner "file" {
   #     source      = "files/puma.service"

@@ -28,7 +28,7 @@ resource "yandex_lb_target_group" "app_tg" {
   name = "lb-target-group-app"
   #   region_id = var.zone
   dynamic "target" {
-    for_each = "${yandex_compute_instance.app[*].network_interface.0.ip_address}"
+    for_each = yandex_compute_instance.app[*].network_interface.0.ip_address
     content {
       subnet_id = var.subnet
       address   = target.value
