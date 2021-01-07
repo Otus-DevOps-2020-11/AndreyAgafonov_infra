@@ -1,3 +1,10 @@
 key.json
 credentials
 variables.json
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+otus-homeworks
+run.sh
