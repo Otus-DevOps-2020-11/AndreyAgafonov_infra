@@ -5,9 +5,9 @@ variable "count_instance" {
   default = 1
 }
 
-variable "subnet" {
-  default = "b0coclf2t4vqo8bpua85"
-}
+# variable "subnet" {
+#   default = "b0coclf2t4vqo8bpua85"
+# }
 
 variable "source_image_id" {
   default = "fd8pa3bmio9agfd3iu36"
@@ -29,4 +29,14 @@ variable zone {
 }
 variable public_key_path {
   default = "~/.ssh/otus/otus_demo_key.pub"
+}
+
+variable app_disk_image {
+  description = "Disk image for reddit app"
+  default     = "fd8m07nmiq36a5tjfakr"
+}
+
+variable db_disk_image {
+  description = "Disk image for reddit db"
+  default     = "fd8gja2tp5tekdjnhr9r"
 }
