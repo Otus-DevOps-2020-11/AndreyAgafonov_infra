@@ -1,9 +1,7 @@
 resource "yandex_compute_instance" "app" {
   name        = "${var.env}-reddit-app"
   platform_id = var.platform_id
-  labels = {
-    tags = "reddit-app"
-  }
+  labels      = var.labels
   resources {
     cores         = var.instance_resources[0].res_cpu
     memory        = var.instance_resources[0].res_mem

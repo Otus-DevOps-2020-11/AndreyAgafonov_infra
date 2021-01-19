@@ -11,7 +11,7 @@ variable subnet_id {
   description = "Subnets for modules"
 }
 
-
+variable "labels" {}
 variable "instance_resources" {
   description = "Default instance size"
   default = [
