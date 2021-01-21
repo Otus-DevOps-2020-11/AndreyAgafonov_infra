@@ -18,6 +18,11 @@ module "app" {
   app_disk_image  = var.app_disk_image
   subnet_id       = module.vpc.vpc_subnet_id
   db_ext_address  = module.db.external_ip_address_db
+  labels = {
+    ansible_group = "app"
+    env           = "prod"
+  }
+
   instance_resources = [
     {
       res_cpu       = 2,
@@ -40,6 +45,10 @@ module "db" {
   public_key_path = var.public_key_path
   db_disk_image   = var.db_disk_image
   subnet_id       = module.vpc.vpc_subnet_id
+  labels = {
+    "ansible_group" = "db"
+    "env"           = "prod"
+  }
   instance_resources = [
     {
       res_cpu       = 2,

@@ -14,7 +14,7 @@ ExecStart=/usr/local/bin/puma
 # Variant: Rails start.
 # ExecStart=/<FULLPATH>/bin/puma -C <YOUR_APP_PATH>/config/puma.rb ../config.ru
 Restart=always
-
+Environment=DATABASE_URL
 [Install]
 WantedBy=multi-user.target
 EOF
