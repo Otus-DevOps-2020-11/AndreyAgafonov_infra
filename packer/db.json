@@ -12,7 +12,6 @@
             "disk_type": "{{user `network-hdd`}}",
             "platform_id": "standard-v1",
             "use_ipv4_nat": "true",
-            "subnet_id": "b0cp8u33s5501im2tie5",
             "zone": "ru-central1-c"
         }
     ],

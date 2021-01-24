@@ -2,7 +2,7 @@
 - name: Configure app
   hosts: app
   vars:
-    db_host: 10.17.100.8
+    db_host: 10.17.100.20
   become: true
   tasks:
     - name: Add unit file for Puma
@@ -17,11 +17,13 @@
         dest: /opt/db_config
 
     - name: enable puma
-
       systemd:
         name: puma
         enabled: yes
         daemon_reload: yes
+
+
+
   handlers:
     - name: reload puma
       systemd:

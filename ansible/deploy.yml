@@ -18,3 +18,9 @@
       bundler:
         state: present
         chdir: "{{ install_dir }}" # <-- В какой директории выполнить команду bundle
+
+  handlers:
+    - name: reload puma
+      systemd:
+        name: puma
+        state: restarted

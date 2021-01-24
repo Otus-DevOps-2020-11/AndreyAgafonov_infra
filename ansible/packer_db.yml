@@ -8,22 +8,30 @@
 
 - name: Configure MongoDB on DB host
   become: true
-  hosts: db
+  hosts: all
   tags: db-tag
   vars:
     mongodb_daemon_bin: /usr/bin/mongod
     mongodb_port: 27017
     mongodb_datadrive: /datadrive/mongodb
     mongodb_user: mongod
-    mongodb_log_path: /var/log/mongodb
-    mongodb_log: "{{ mongodb_log_path }}/mongod.log "
-    mongodb_conf_pidFile: /var/run/mongodb
-    mongodb_pid: "{{ mongodb_conf_pidFile }}/mongod.pid"
     dns_server1: 8.8.8.8
     dns_server2: 8.8.4.4
     domain: otus.local
     update_dns: yes
   tasks:
+    - name: install git
+      become: yes
+      apt:
+        pkg: "{{ item }}"
+        state: present
+        update_cache: yes
+      retries: 10
+      delay: 10 # in seconds
+      register: result
+      until: result is not failed
+      with_items:
+        - mc
 
     - name: Insert/Update config DNS
       blockinfile:
@@ -55,8 +63,6 @@
         force: yes
       loop:
         - "{{ mongodb_datadrive }}"
-        - "{{ mongodb_log_path }}"
-        - "{{ mongodb_conf_pidFile }}"
 
     - name: Step 1 of 2  Disable Transparent Huge Pages (THP)
       copy:
@@ -74,7 +80,9 @@
         name: disable-transparent-huge-pages.service
 
     - name: Add repository key for MongoDB latest version
-      shell: wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+      apt_key:
+        url: "https://www.mongodb.org/static/pgp/server-4.4.asc"
+        state: present
 
     - name: Add repository
       apt_repository:
@@ -93,28 +101,15 @@
         - "mongodb-org-tools"
         - "sysstat"
 
-    - name: Mongodb base config
-      template:
-        src: "mongod_packer.conf.j2"
-        dest: /etc/mongod.conf
-        owner: root
-        group: root
-        mode: "0644"
-        force: yes
-        backup: yes
-      notify:
-        - restart_mongodb
+    - name: Start mongod
+      systemd:
+        name: mongod
+        state: started
+        enabled: yes
 
-    # - name:  Make sure a service is started
-    #   systemd:
-    #     state: restarted
-    #     name: mongod
-    #     enabled: yes
-
-    # - name:  Make sure a service is running
-    #   systemd:
-    #     state: started
-    #     name: mongod
+    - name: Wait for port opened
+      wait_for:
+        port: "{{ mongodb_port }}"
 
   handlers:
     - name: start_mongodb
