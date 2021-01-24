@@ -1,0 +1,64 @@
+#!/bin/bash
+---
+- name: deploy app
+  become: true
+  hosts: app
+  # tags: deploy-tag
+  vars:
+    work_dir: /opt
+    install_dir: "{{work_dir }}/reddit"
+    db_host: 10.17.100.8
+  tasks:
+
+    - name: install git
+      become: yes
+      apt:
+        pkg: "{{ item }}"
+        state: present
+        update_cache: yes
+      retries: 10
+      delay: 10 # in seconds
+      register: result
+      until: result is not failed
+      with_items:
+        - git
+        - ruby-full
+        - ruby-bundler
+        - build-essential
+
+    - name: Fetch the latest version of application code
+      git:
+        repo: 'https://github.com/express42/reddit.git'
+        dest: "{{ install_dir }}"
+        version: monolith # <-- Указываем нужную ветку
+      notify: reload puma
+
+    - name: Bundle install
+      bundler:
+        state: present
+        chdir: "{{ install_dir }}" # <-- В какой директории выполнить команду bundle
+
+
+    - name: Add unit file for Puma
+      copy:
+        src: files/puma.service
+        dest: /etc/systemd/system/puma.service
+      notify: reload puma
+
+    - name: Add config for DB connection
+      template:
+        src: templates/db_config.j2
+        dest: /opt/db_config
+
+  handlers:
+    - name: enable puma
+      systemd:
+        name: puma
+        enabled: yes
+        daemon_reload: yes
+
+        handlers:
+    - name: reload puma
+      systemd:
+        name: puma
+        state: restarted

@@ -1,0 +1,83 @@
+---
+- name: Configure MongoDB on DB host
+  become: true
+  hosts: db
+  tags: db-tag
+  vars:
+    - mongo_bind_ip: 0.0.0.0
+  tasks:
+    - name: Change mongo config file
+      become: true # <-- Выполнить задание от root
+      template:
+        src: templates/mongod.conf.j2 # <-- Путь до локального файла-шаблона
+        dest: /etc/mongod.conf # <-- Путь на удаленном хосте
+        mode: 0644 # <-- Права на файл, которые нужно установить
+      notify: restart mongod
+
+  handlers: # <-- Добавим блок handlers и задачу
+    - name: restart mongod
+      become: true
+      service:
+        name: mongod
+        state: restarted
+        daemon_reload: yes
+
+
+- name: Configure app
+  hosts: app
+  tags: app-tag
+  vars:
+    db_host: 10.17.100.8
+  become: true
+  tasks:
+    # - name: stop service otus (previos task with *)
+    #   systemd:
+    #     name: otus.service
+    #     state: stopped
+    #     enabled: no
+
+    - name: Add unit file for Puma
+      copy:
+        src: files/puma.service
+        dest: /etc/systemd/system/puma.service
+      notify: reload puma
+
+    - name: Add config for DB connection
+      template:
+        src: templates/db_config.j2
+        dest: /opt/db_config
+
+    - name: enable puma
+
+      systemd:
+        name: puma
+        enabled: yes
+        daemon_reload: yes
+  handlers:
+    - name: reload puma
+      systemd:
+        name: puma
+        state: restarted
+
+
+
+- name: deploy app
+  become: true
+  hosts: app
+  vars:
+    install_dir: /opt/reddit
+  tasks:
+
+    - name: Fetch the latest version of application code
+      git:
+        repo: 'https://github.com/express42/reddit.git'
+        dest: "{{ install_dir }}"
+        version: monolith # <-- Указываем нужную ветку
+      tags: deploy-tag
+      notify: reload puma
+
+    - name: Bundle install
+      bundler:
+        state: present
+        chdir: "{{ install_dir }}" # <-- В какой директории выполнить команду bundle
+      tags: deploy-tag

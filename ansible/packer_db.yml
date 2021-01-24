@@ -1,0 +1,137 @@
+#!/bin/bash
+# echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+# sleep 30
+# apt-get install -qq apt-transport-https ca-certificates
+# sudo apt-get update -qq && sudo apt-get install -qq -y mongodb-org
+# sudo systemctl start mongod
+# sudo systemctl enable mongod
+
+- name: Configure MongoDB on DB host
+  become: true
+  hosts: db
+  tags: db-tag
+  vars:
+    mongodb_daemon_bin: /usr/bin/mongod
+    mongodb_port: 27017
+    mongodb_datadrive: /datadrive/mongodb
+    mongodb_user: mongod
+    mongodb_log_path: /var/log/mongodb
+    mongodb_log: "{{ mongodb_log_path }}/mongod.log "
+    mongodb_conf_pidFile: /var/run/mongodb
+    mongodb_pid: "{{ mongodb_conf_pidFile }}/mongod.pid"
+    dns_server1: 8.8.8.8
+    dns_server2: 8.8.4.4
+    domain: otus.local
+    update_dns: yes
+  tasks:
+
+    - name: Insert/Update config DNS
+      blockinfile:
+        path: /etc/resolvconf/resolv.conf.d/head
+        block: |
+          nameserver {{ dns_server1 }}
+          nameserver {{ dns_server2 }}
+          search {{ domain }}
+      notify: restart_resolvconf
+      when: update_dns
+
+    - name: Check if folder {{ mongodb_datadrive }} exist
+      stat:
+        path: "{{ mongodb_datadrive }}"
+      register: mongo_folder
+
+    - name: Create user for mongodb
+      user:
+        name: "{{ mongodb_user }}"
+        comment: User for mongodb dataBase
+
+    - name: Create dir for data
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ mongodb_user }}"
+        group: "{{ mongodb_user }}"
+        mode: "0755"
+        force: yes
+      loop:
+        - "{{ mongodb_datadrive }}"
+        - "{{ mongodb_log_path }}"
+        - "{{ mongodb_conf_pidFile }}"
+
+    - name: Step 1 of 2  Disable Transparent Huge Pages (THP)
+      copy:
+        src: files/disable-transparent-huge-pages.service
+        dest: /etc/systemd/system/disable-transparent-huge-pages.service
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Step 2 of 2 Disable Transparent Huge Pages (THP)
+      systemd:
+        state: started
+        daemon_reload: yes
+        enabled: yes
+        name: disable-transparent-huge-pages.service
+
+    - name: Add repository key for MongoDB latest version
+      shell: wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+
+    - name: Add repository
+      apt_repository:
+        repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse"
+        state: present
+        filename: mongodb-org-4.4.list
+
+    - name: Install mongod latest version
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - "mongodb-org-server"
+        - "mongodb-org-shell"
+        - "mongodb-org-tools"
+        - "sysstat"
+
+    - name: Mongodb base config
+      template:
+        src: "mongod_packer.conf.j2"
+        dest: /etc/mongod.conf
+        owner: root
+        group: root
+        mode: "0644"
+        force: yes
+        backup: yes
+      notify:
+        - restart_mongodb
+
+    # - name:  Make sure a service is started
+    #   systemd:
+    #     state: restarted
+    #     name: mongod
+    #     enabled: yes
+
+    # - name:  Make sure a service is running
+    #   systemd:
+    #     state: started
+    #     name: mongod
+
+  handlers:
+    - name: start_mongodb
+      systemd:
+        name: mongod
+        enabled: yes
+        daemon_reload: yes
+        state: started
+
+    - name: restart_mongodb
+      systemd:
+        name: mongod
+        enabled: yes
+        daemon_reload: yes
+        state: restarted
+
+    - name: restart_resolvconf
+      systemd:
+        name: resolvconf
+        state: restarted
