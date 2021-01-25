@@ -1,0 +1,28 @@
+#!/bin/bash
+---
+- name: deploy app
+  become: true
+  hosts: all
+  # tags: deploy-tag
+  vars:
+    work_dir: /opt
+    install_dir: "{{work_dir }}/reddit"
+    db_host: 10.17.100.8
+  tasks:
+
+    - name: install git and other soft
+      become: yes
+      apt:
+        pkg: "{{ item }}"
+        state: present
+        update_cache: yes
+      retries: 10
+      delay: 10 # in seconds
+      register: result
+      until: result is not failed
+      with_items:
+        - git
+        - ruby-full
+        - ruby-bundler
+        - build-essential
+        - mc

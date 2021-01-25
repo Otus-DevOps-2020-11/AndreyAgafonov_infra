@@ -38,12 +38,16 @@ variable public_key_path {
 
 variable app_disk_image {
   description = "Disk image for reddit app"
-  default     = "fd8m07nmiq36a5tjfakr"
+  default     = "fd8da33ktpjjoovuaati"
+  # "fd8m07nmiq36a5tjfakr"
+  # fd8da33ktpjjoovuaati собран при помози Зacker + ansible
 }
 
 variable db_disk_image {
   description = "Disk image for reddit db"
-  default     = "fd8gja2tp5tekdjnhr9r"
+  default     = "fd8n2jcor6nfcv742ajg"
+  # fd8gja2tp5tekdjnhr9r
+  # fd8n2jcor6nfcv742ajg # создано packeR + ansible
 }
 
 variable "backend_access_key" {

@@ -1,0 +1,38 @@
+---
+- name: Configure MongoDB on DB host
+  become: true
+  hosts: db
+  vars:
+    mongo_bind_ip: 0.0.0.0
+    mongodb_port: 27017
+    mongodb_conf_pidFile: /var/run/mongodb
+    mongodb_pid: "{{ mongodb_conf_pidFile }}/mongod.pid"
+    mongodb_datadrive: /datadrive/mongodb
+    mongodb_log_path: /var/log/mongodb
+    mongodb_log: "{{ mongodb_log_path }}/mongod.log "
+  tasks:
+    - name: Change mongo config file
+      become: true # <-- Выполнить задание от root
+      template:
+        src: templates/mongod.conf.j2 # <-- Путь до локального файла-шаблона
+        dest: /etc/mongod.conf # <-- Путь на удаленном хосте
+        mode: 0644 # <-- Права на файл, которые нужно установить
+      notify: restart mongod
+
+    - name: Start mongod
+      systemd:
+        name: mongod
+        state: restarted
+        enabled: yes
+
+    - name: Wait for port opened
+      wait_for:
+        port: "{{ mongodb_port }}"
+
+  handlers: # <-- Добавим блок handlers и задачу
+    - name: restart mongod
+      become: true
+      service:
+        name: mongod
+        state: restarted
+        daemon_reload: yes

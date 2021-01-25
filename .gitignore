@@ -8,3 +8,6 @@ variables.json
 .terraform/
 otus-homeworks
 run.sh
+
+#Ansuble
+*.retry

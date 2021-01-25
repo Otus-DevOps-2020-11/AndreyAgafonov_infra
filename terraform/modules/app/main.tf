@@ -34,30 +34,30 @@ resource "yandex_compute_instance" "app" {
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 
-  connection {
-    type        = "ssh"
-    host        = self.network_interface.0.nat_ip_address
-    user        = "ubuntu"
-    agent       = false
-    private_key = file("~/.ssh/otus/otus_demo_key")
-  }
-
-  provisioner "file" {
-    source      = "../modules/app/files/create_unit.sh"
-    destination = "/tmp/create_unit.sh"
-  }
-  # provisioner "file" {
-  #   source      = "../modules/app/files/app-${var.env}.sh"
-  #   destination = "/tmp/app-${var.env}.sh"
+  # connection {
+  #   type        = "ssh"
+  #   host        = self.network_interface.0.nat_ip_address
+  #   user        = "ubuntu"
+  #   agent       = false
+  #   private_key = file("~/.ssh/otus/otus_demo_key")
   # }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo bash -c 'echo DATABASE_URL=${var.db_ext_address}:27017 >>/etc/environment'",
-      "sudo bash -c 'source /etc/environment'",
-      "sudo cat /etc/environment",
-      "echo $DATABASE_URL",
-      "sudo bash /tmp/create_unit.sh && echo $? && exit 0"
-    ]
-  }
+  # provisioner "file" {
+  #   source      = "../modules/app/files/create_unit.sh"
+  #   destination = "/tmp/create_unit.sh"
+  # }
+  # # provisioner "file" {
+  # #   source      = "../modules/app/files/app-${var.env}.sh"
+  # #   destination = "/tmp/app-${var.env}.sh"
+  # # }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "sudo bash -c 'echo DATABASE_URL=${var.db_ext_address}:27017 >>/etc/environment'",
+  #     "sudo bash -c 'source /etc/environment'",
+  #     "sudo cat /etc/environment",
+  #     "echo $DATABASE_URL",
+  #     "sudo bash /tmp/create_unit.sh && echo $? && exit 0"
+  #   ]
+  # }
 }
