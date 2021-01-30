@@ -21,6 +21,7 @@ module "app" {
   labels = {
     "ansible_group" = "app"
     "env"           = "stage"
+    # "var_localip"   = self.network_interface.0.address
   }
   instance_resources = [
     {
@@ -45,7 +46,7 @@ module "db" {
   db_disk_image   = var.db_disk_image
   subnet_id       = module.vpc.vpc_subnet_id
   labels = {
-    ansible_group = "app"
+    ansible_group = "db"
     env           = "stage"
   }
   instance_resources = [
@@ -63,4 +64,17 @@ module "db" {
   ]
   # instance_secondary_disk = []
   depends_on = [module.vpc]
+}
+
+resource "null_resource" "ansible_deploy" {
+  # triggers = {
+  #   db_instance_ids  = "${join(",", module.db.yandex_compute_instance.db.*.id)}"
+  #   app_instance_ids = "${join(",", module.app.yandex_compute_instance.app.*.id)}"
+  # }
+
+  provisioner "local-exec" {
+    working_dir = "../../ansible"
+    command     = "ansible-playbook playbooks/site.yml -i environments/${var.env}/inventory.sh "
+  }
+  depends_on = [module.app, module.db]
 }

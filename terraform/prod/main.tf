@@ -65,3 +65,15 @@ module "db" {
   # instance_secondary_disk = []
   depends_on = [module.vpc]
 }
+resource "null_resource" "ansible_deploy" {
+  # triggers = {
+  #   db_instance_ids  = "${join(",", module.db.yandex_compute_instance.db.*.id)}"
+  #   app_instance_ids = "${join(",", module.app.yandex_compute_instance.app.*.id)}"
+  # }
+
+  provisioner "local-exec" {
+    working_dir = "../../ansible"
+    command     = "ansible-playbook playbooks/site.yml -i environments/${var.env}/inventory.sh "
+  }
+  depends_on = [module.app, module.db]
+}
