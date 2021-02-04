@@ -1,0 +1,10 @@
+---
+# defaults file for db
+env: local
+mongo_bind_ip: 0.0.0.0
+mongodb_port: 27017
+mongodb_conf_pidFile: /var/run/mongodb
+mongodb_pid: "{{ mongodb_conf_pidFile }}/mongod.pid"
+mongodb_datadrive: /datadrive/mongodb
+mongodb_log_path: /var/log/mongodb
+mongodb_log: "{{ mongodb_log_path }}/mongod.log "

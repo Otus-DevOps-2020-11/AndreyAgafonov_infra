@@ -34,18 +34,19 @@ resource "yandex_compute_instance" "db" {
     ssh-keys = "ubuntu:${file(var.public_key_path)}"
   }
 
-  # connection {
-  #   type        = "ssh"
-  #   host        = self.network_interface.0.nat_ip_address
-  #   user        = "ubuntu"
-  #   agent       = false
-  #   private_key = file("~/.ssh/otus/otus_demo_key")
-  # }
+  connection {
+    type        = "ssh"
+    host        = self.network_interface.0.nat_ip_address
+    user        = "ubuntu"
+    agent       = false
+    private_key = file("~/.ssh/otus/otus_demo_key")
+  }
 
-  # provisioner "remote-exec" {
-  #   inline = [
-  #     "sudo sed -i 's/  bindIp: 127.0.0.1/  bindIpAll: true/' /etc/mongod.conf",
-  #     "sudo systemctl restart mongod"
-  #   ]
-  # }
+  provisioner "remote-exec" {
+    inline = [
+      "sleep 30",
+      "sudo apt-get update -y",
+      "sudo apt-get install python -y"
+    ]
+  }
 }

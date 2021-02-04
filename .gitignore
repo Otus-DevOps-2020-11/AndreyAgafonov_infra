@@ -11,3 +11,5 @@ run.sh
 
 #Ansuble
 *.retry
+jdauphant.nginx
+vault.key

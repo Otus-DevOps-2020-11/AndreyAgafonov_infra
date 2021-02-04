@@ -1,0 +1,4 @@
+---
+# defaults file for app
+db_host: 10.17.100.12
+env: local
