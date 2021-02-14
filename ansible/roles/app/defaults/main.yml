@@ -1,4 +1,9 @@
 ---
 # defaults file for app
-db_host: 10.17.100.12
+db_host: "{{ hostvars[groups.db[0]]['internal_address'] }}"
 env: local
+
+work_dir: /opt
+install_dir: "{{work_dir }}/reddit"
+
+deploy_user: ubuntu

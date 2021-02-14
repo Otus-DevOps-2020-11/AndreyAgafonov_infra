@@ -8,16 +8,8 @@
 #   debug:
 #     msg: "{{ hostvars[groups.db[0]]['internal_address'] }}"
 
-- name: Add unit file for Puma
-  copy:
-    src: files/puma.service
-    dest: /etc/systemd/system/puma.service
-  notify: reload puma
-
-- name: Add config for DB connection
-  template:
-    src: templates/db_config.j2
-    dest: /opt/db_config
+- include: ruby.yml
+- include: puma.yml
 
 - name: enable puma
   systemd:
