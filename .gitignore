@@ -13,3 +13,18 @@ run.sh
 *.retry
 jdauphant.nginx
 vault.key
+
+
+# Vagrant & molecule
+.vagrant/
+*.log
+*.pyc
+.molecule
+.cache
+.pytest_cache
+
+
+#python
+Pipfile*
+venv
+main.py

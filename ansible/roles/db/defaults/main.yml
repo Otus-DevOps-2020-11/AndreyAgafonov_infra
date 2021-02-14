@@ -8,3 +8,5 @@ mongodb_pid: "{{ mongodb_conf_pidFile }}/mongod.pid"
 mongodb_datadrive: /datadrive/mongodb
 mongodb_log_path: /var/log/mongodb
 mongodb_log: "{{ mongodb_log_path }}/mongod.log "
+mongodb_daemon_bin: /usr/bin/mongod
+mongodb_user: mongod

@@ -1,0 +1,46 @@
+
+- name: Add repository key for MongoDB latest version
+  apt_key:
+    url: "https://www.mongodb.org/static/pgp/server-4.4.asc"
+    state: present
+
+
+- name: Add APT repository
+  apt_repository:
+    repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse
+    state: present
+
+
+- name: Step 1 of 2  Disable Transparent Huge Pages (THP)
+  copy:
+    src: files/disable-transparent-huge-pages.service
+    dest: /etc/systemd/system/disable-transparent-huge-pages.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Step 2 of 2 Disable Transparent Huge Pages (THP)
+  systemd:
+    state: started
+    daemon_reload: yes
+    enabled: yes
+    name: disable-transparent-huge-pages.service
+
+
+- name: Add repository
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.4 multiverse"
+    state: present
+    filename: mongodb-org-4.4.list
+
+- name: Install mongodb package
+  apt:
+    name: mongodb-org
+    state: present
+
+
+- name: Configure service supervisor
+  systemd:
+    name: mongod
+    enabled: yes
+    state: started
